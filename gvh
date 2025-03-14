@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,7 +23,7 @@
         }
 
         /* Intro Screen */
-        #intro-screen, #options-page {
+        #intro-screen {
             position: absolute;
             top: 0;
             left: 0;
@@ -37,9 +36,10 @@
             background: #1a1a1a;
             z-index: 10;
             transition: opacity 0.5s ease;
+            text-align: center;
         }
 
-        #intro-screen.hidden, #options-page.hidden {
+        #intro-screen.hidden, #options-page.hidden, #chat-container.hidden {
             opacity: 0;
             pointer-events: none;
         }
@@ -48,10 +48,9 @@
             font-family: 'Dancing Script', cursive;
             font-size: 2.5rem;
             color: #e0e0e0;
-            animation: fadeIn 1.5s ease-in-out;
         }
 
-        #tap-to-begin, .options-btn {
+        #tap-to-begin {
             margin-top: 20px;
             padding: 10px 25px;
             font-size: 1.1rem;
@@ -61,10 +60,28 @@
             border-radius: 10px;
             cursor: pointer;
             transition: background 0.3s ease;
+            z-index: 11; /* Ensure button is clickable */
         }
 
-        #tap-to-begin:hover, .options-btn:hover {
+        #tap-to-begin:hover {
             background: #555;
+        }
+
+        /* Options Page */
+        #options-page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #1a1a1a;
+            z-index: 10;
+            transition: opacity 0.5s ease;
+            text-align: center;
         }
 
         #options-page input {
@@ -78,32 +95,82 @@
             color: #e0e0e0;
         }
 
+        .options-btn {
+            margin-top: 20px;
+            padding: 10px 25px;
+            font-size: 1.1rem;
+            background: #333;
+            color: #e0e0e0;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .options-btn:hover {
+            background: #555;
+        }
+
+        #options-back-top {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 15px;
+            font-size: 0.9rem;
+            background: #007bff;
+            border: none;
+            border-radius: 20px;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        #options-back-top:hover {
+            background: #0056b3;
+        }
+
         /* Main Container */
         #main-container {
             width: 100%;
-            max-width: 600px;
+            max-width: 90vw;
             height: 100vh;
             position: relative;
             background: #1a1a1a;
             border-radius: 15px;
             overflow: hidden;
+            display: none;
         }
 
         /* Sidebar */
         #sidebar {
-            position: absolute;
             width: 250px;
             height: 100%;
             background: #2a2a2a;
-            left: -250px;
             top: 0;
             transition: left 0.3s ease;
             z-index: 5;
             padding: 20px;
+            position: relative;
         }
 
-        #sidebar.open {
-            left: 0;
+        @media (max-width: 768px) {
+            #sidebar {
+                position: absolute;
+                left: -250px;
+            }
+            #sidebar.open {
+                left: 0;
+            }
+            #intro-screen {
+                padding: 0 20px;
+            }
+        }
+
+        @media (min-width: 769px) {
+            #sidebar {
+                position: relative;
+                left: 0;
+            }
         }
 
         #sidebar ul {
@@ -130,14 +197,18 @@
             border-radius: 5px;
             text-align: center;
             padding: 20px;
+            display: none;
         }
 
         /* Chat Interface */
         #chat-container {
+            flex-grow: 1;
             height: 100%;
             display: flex;
             flex-direction: column;
             padding: 20px;
+            position: relative;
+            background: #1a1a1a;
         }
 
         #chat-display {
@@ -148,6 +219,20 @@
             border-radius: 10px;
             margin-bottom: 20px;
             color: #333;
+            width: 100%;
+        }
+
+        @media (min-width: 769px) {
+            #chat-container {
+                padding: 30px;
+            }
+            #chat-display {
+                max-width: 100%;
+                min-height: 400px;
+            }
+            #chat-input {
+                max-width: 100%;
+            }
         }
 
         .message {
@@ -162,13 +247,15 @@
             color: #fff;
             align-self: flex-end;
             margin-left: auto;
+            font-family: 'Arial', sans-serif;
         }
 
         .diary-message {
             background: #666;
             color: #e0e0e0;
             align-self: flex-start;
-            font-style: slight-italic;
+            font-family: 'Arial', sans-serif;
+            font-style: italic;
         }
 
         #chat-input {
@@ -186,7 +273,7 @@
             outline: none;
         }
 
-        #send-btn, #mic-btn, #camera-btn {
+        #send-btn, #mic-btn, #camera-btn, #back-btn {
             padding: 10px 20px;
             background: #007bff;
             border: none;
@@ -196,21 +283,16 @@
             transition: background 0.3s ease;
         }
 
-        #send-btn:hover, #mic-btn:hover, #camera-btn:hover {
+        #send-btn:hover, #mic-btn:hover, #camera-btn:hover, #back-btn:hover {
             background: #0056b3;
         }
 
-        /* Animations */
-        @keyframes fadeIn {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
-        }
-
-        /* Swipe Handling */
-        @media (max-width: 768px) {
-            #sidebar {
-                transition: left 0.3s ease;
-            }
+        #back-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 5px 15px;
+            font-size: 0.9rem;
         }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
@@ -224,12 +306,14 @@
 
     <!-- Options Page -->
     <div id="options-page" class="hidden">
+        <button id="options-back-top">Back</button>
         <h2>Welcome to My Self</h2>
         <input type="text" id="name-input" placeholder="What’s your name?">
         <input type="text" id="intro-input" placeholder="Tell me about yourself">
         <input type="text" id="pin-input" placeholder="Set a PIN for encryption">
         <input type="text" id="passcode-input" placeholder="Enter passcode (if returning)">
         <button id="options-submit" class="options-btn">Enter Chat</button>
+        <button id="options-back" class="options-btn">Back</button>
     </div>
 
     <!-- Main Container -->
@@ -242,13 +326,14 @@
                 <li id="maps-tab">Maps</li>
                 <li id="settings">Settings</li>
             </ul>
-            <div id="map-placeholder" class="hidden">
+            <div id="map-placeholder">
                 <p>OpenStreetMap Placeholder<br>“You loved that diner here!”</p>
             </div>
         </div>
 
         <!-- Chat Interface -->
-        <div id="chat-container">
+        <div id="chat-container" class="hidden">
+            <button id="back-btn">Back</button>
             <div id="chat-display"></div>
             <div id="chat-input">
                 <input type="text" id="input-field" placeholder="Tell me something...">
@@ -265,6 +350,7 @@
         const optionsPage = document.getElementById('options-page');
         const tapToBegin = document.getElementById('tap-to-begin');
         const sidebar = document.getElementById('sidebar');
+        const chatContainer = document.getElementById('chat-container');
         const chatDisplay = document.getElementById('chat-display');
         const inputField = document.getElementById('input-field');
         const sendBtn = document.getElementById('send-btn');
@@ -275,8 +361,12 @@
         const pinInput = document.getElementById('pin-input');
         const passcodeInput = document.getElementById('passcode-input');
         const optionsSubmit = document.getElementById('options-submit');
+        const optionsBack = document.getElementById('options-back');
+        const optionsBackTop = document.getElementById('options-back-top');
+        const backBtn = document.getElementById('back-btn');
         const mapTab = document.getElementById('maps-tab');
         const mapPlaceholder = document.getElementById('map-placeholder');
+        const mainContainer = document.getElementById('main-container');
 
         // State
         let userIP = '';
@@ -288,18 +378,30 @@
         let adminBypass = false;
         let chatHistory = JSON.parse(localStorage.getItem('chatHistory')) || {};
         let currentTab = 'new';
+        let lastCheck = localStorage.getItem('lastCheck') || Date.now();
 
-        // IP Detection (Simplified)
+        // IP Detection
         fetch('https://api.ipify.org?format=json')
             .then(res => res.json())
             .then(data => {
                 userIP = data.ip;
                 localStorage.setItem('userIP', userIP);
+                checkSubscriptionStatus();
             })
-            .catch(() => userIP = '192.168.1.100'); // Fallback
+            .catch(() => {
+                userIP = '192.168.1.100';
+                checkSubscriptionStatus();
+            });
+
+        // Initial Load
+        introScreen.classList.remove('hidden');
+        optionsPage.classList.add('hidden');
+        chatContainer.classList.add('hidden');
+        mainContainer.style.display = 'none';
 
         // Intro to Options
-        tapToBegin.addEventListener('click', () => {
+        function handleTapToBegin() {
+            console.log('Tap to Begin clicked'); // Debug log
             introScreen.classList.add('hidden');
             optionsPage.classList.remove('hidden');
             if (userName) {
@@ -307,8 +409,14 @@
                 introInput.value = userIntro;
                 pinInput.value = userPin;
                 passcodeInput.placeholder = 'Enter your passcode';
+                passcodeInput.focus();
+            } else {
+                nameInput.focus();
             }
-        });
+        }
+
+        tapToBegin.addEventListener('click', handleTapToBegin);
+        tapToBegin.addEventListener('touchstart', handleTapToBegin); // Support for touch devices
 
         // Options Page Logic
         optionsSubmit.addEventListener('click', () => {
@@ -325,16 +433,58 @@
             if (enteredPasscode === 'guru' || enteredPasscode === 'ancient one') {
                 adminBypass = true;
                 optionsPage.classList.add('hidden');
+                mainContainer.style.display = 'flex';
+                chatContainer.classList.remove('hidden');
                 addMessage("Admin access granted, Kofi Fosu. How can I assist?");
             } else if (userPasscode && enteredPasscode !== userPasscode) {
                 alert('Incorrect passcode!');
+                return;
             } else {
                 localStorage.setItem('userName', userName);
                 localStorage.setItem('userIntro', userIntro);
                 localStorage.setItem('userPin', userPin);
+                if (!userPasscode && isSubscribed) {
+                    userPasscode = `X${Math.random().toString(36).slice(2, 5).toUpperCase()}-${Math.random().toString(36).slice(2, 5).toUpperCase()}-${Math.random().toString(36).slice(2, 5).toUpperCase()}`;
+                    localStorage.setItem('userPasscode', userPasscode);
+                    addMessage(`Your passcode for multi-device access: ${userPasscode}. Save it!`);
+                }
                 optionsPage.classList.add('hidden');
+                mainContainer.style.display = 'flex';
+                chatContainer.classList.remove('hidden');
                 addMessage(`Hey ${userName}! I’m My Self, your diary. What’s up?`);
             }
+        });
+
+        // Back Buttons
+        optionsBack.addEventListener('click', () => {
+            optionsPage.classList.add('hidden');
+            introScreen.classList.remove('hidden');
+            mainContainer.style.display = 'none';
+            nameInput.value = '';
+            introInput.value = '';
+            pinInput.value = '';
+            passcodeInput.value = '';
+        });
+
+        optionsBackTop.addEventListener('click', () => {
+            optionsPage.classList.add('hidden');
+            introScreen.classList.remove('hidden');
+            mainContainer.style.display = 'none';
+            nameInput.value = '';
+            introInput.value = '';
+            pinInput.value = '';
+            passcodeInput.value = '';
+        });
+
+        backBtn.addEventListener('click', () => {
+            chatContainer.classList.add('hidden');
+            optionsPage.classList.remove('hidden');
+            mainContainer.style.display = 'none';
+            inputField.value = '';
+            nameInput.value = userName;
+            introInput.value = userIntro;
+            pinInput.value = userPin;
+            passcodeInput.placeholder = userPasscode ? 'Enter your passcode' : 'Enter passcode (if returning)';
         });
 
         // Swipe Gestures
@@ -352,9 +502,9 @@
 
         function handleSwipe() {
             const swipeDistance = touchEndX - touchStartX;
-            if (swipeDistance > 50) {
+            if (swipeDistance > 50 && window.innerWidth <= 768) {
                 sidebar.classList.add('open');
-            } else if (swipeDistance < -50) {
+            } else if (swipeDistance < -50 && window.innerWidth <= 768) {
                 sidebar.classList.remove('open');
             }
         }
@@ -373,14 +523,14 @@
             localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
         }
 
-        // OpenAI API Key
-        const OPENAI_API_KEY = 'YOUR_OPENAI_API_KEY'; // Replace here
+        // OpenAI API Integration
+        const OPENAI_API_KEY = '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';
 
         async function getOpenAIResponse(prompt) {
             if (!navigator.onLine) {
                 return "I’m offline but here! Try: 'How’s my day going?' for some insight.";
             }
-            if (!OPENAI_API_KEY || OPENAI_API_KEY === 'YOUR_OPENAI_API_KEY') {
+            if (!OPENAI_API_KEY || OPENAI_API_KEY === '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') {
                 return "I need an OpenAI API key to fully shine. For now: Tell me more!";
             }
             try {
@@ -392,7 +542,10 @@
                     },
                     body: JSON.stringify({
                         model: 'gpt-3.5-turbo',
-                        messages: [{ role: 'user', content: `${prompt}\nSkills: Self-awareness, foresight, metacognition, communication, research, adaptability, decision-making, systems thinking, creativity, critical thinking, designing, homework solving.` }],
+                        messages: [{
+                            role: 'user',
+                            content: `${prompt}\nSkills: Self-awareness & Emotional Intelligence: 'You sound off—want to unpack that?', Foresight & Strategic Thinking: 'You’re eyeing that trip—here’s a 3-step plan.', Metacognition: 'You overthink deadlines—let’s tweak how you approach them.', Communication & Collaboration: 'Need to pitch an idea? I’ll draft it your way.', Research & Information Synthesis: 'I dug into that topic—here’s the gist.', Adaptability & Flexibility: 'Plans changed? I’ve got a new angle.', Decision-Making: 'Pros/cons of skipping that meeting—your call?', Systems Thinking: 'Your work stress ties to sleep—let’s fix the chain.', Creativity: 'Stuck? Here’s a wild sci-fi story idea to spark you.', Critical Thinking: 'That argument’s shaky—here’s why.', Designing: 'Sketching a logo? I’ll suggest shapes and vibes.', Homework Solver: 'Solve 2x + 3 = 7? x = 2.'`
+                        }],
                         max_tokens: 150
                     })
                 });
@@ -415,11 +568,6 @@
                 } else {
                     const aiResponse = await getOpenAIResponse(userText);
                     addMessage(aiResponse);
-                    if (!userPasscode && isSubscribed) {
-                        userPasscode = `X${Math.random().toString(36).slice(2, 5).toUpperCase()}-${Math.random().toString(36).slice(2, 5).toUpperCase()}-${Math.random().toString(36).slice(2, 5).toUpperCase()}`;
-                        localStorage.setItem('userPasscode', userPasscode);
-                        addMessage(`Your passcode for multi-device access: ${userPasscode}. Save it!`);
-                    }
                 }
                 inputField.value = '';
             }
@@ -464,8 +612,8 @@
         });
 
         mapTab.addEventListener('click', () => {
-            mapPlaceholder.classList.toggle('hidden');
-            sidebar.classList.add('open');
+            mapPlaceholder.style.display = mapPlaceholder.style.display === 'none' ? 'block' : 'none';
+            if (window.innerWidth <= 768) sidebar.classList.add('open');
         });
 
         // Creator Credit
@@ -475,25 +623,22 @@
             }
         });
 
-        // Payment Grace Period Simulation
-        if (isSubscribed) {
-            const lastCheck = localStorage.getItem('lastCheck') || Date.now();
-            const daysOffline = (Date.now() - lastCheck) / (1000 * 60 * 60 * 24);
-            if (daysOffline > 7) {
-                isSubscribed = false;
-                localStorage.setItem('isSubscribed', 'false');
-                addMessage("Your 7-day offline grace is up—subscribe again?");
+        // Subscription and Offline Grace
+        function checkSubscriptionStatus() {
+            if (isSubscribed) {
+                const daysOffline = (Date.now() - lastCheck) / (1000 * 60 * 60 * 24);
+                if (daysOffline > 7) {
+                    isSubscribed = false;
+                    localStorage.setItem('isSubscribed', 'false');
+                    addMessage("Your 7-day offline grace is up—subscribe again?");
+                } else {
+                    localStorage.setItem('lastCheck', Date.now());
+                }
             }
         }
 
-        // Initial Load
-        if (!userName) {
-            setTimeout(() => addMessage("Hey, I’m My Self—your diary. Tap above to start!"), 500);
-        } else {
-            introScreen.classList.add('hidden');
-            optionsPage.classList.add('hidden');
-            addMessage(`Welcome back, ${userName}! What’s on your mind?`);
-            chatHistory[currentTab]?.forEach(msg => addMessage(msg.text, msg.isUser));
+        if (navigator.onLine && !isSubscribed && !adminBypass) {
+            setTimeout(() => addMessage("Loving this? Subscribe for $1/month to keep going! Tap here: [Stripe Link Placeholder]"), 5000);
         }
     </script>
 </body>
