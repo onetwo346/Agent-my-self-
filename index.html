@@ -524,13 +524,13 @@
         }
 
         // OpenAI API Integration
-        const OPENAI_API_KEY = 'YOUR_OPENAI_API_KEY';
+        const OPENAI_API_KEY = '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';
 
         async function getOpenAIResponse(prompt) {
             if (!navigator.onLine) {
                 return "I’m offline but here! Try: 'How’s my day going?' for some insight.";
             }
-            if (!OPENAI_API_KEY || OPENAI_API_KEY === 'YOUR_OPENAI_API_KEY') {
+            if (!OPENAI_API_KEY || OPENAI_API_KEY === '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') {
                 return "I need an OpenAI API key to fully shine. For now: Tell me more!";
             }
             try {
