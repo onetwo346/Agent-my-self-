@@ -72,9 +72,6 @@
             #intro-screen {
                 padding: 0 20px; /* Add padding to prevent content from sticking to edges */
             }
-            #intro-text {
-                font-size: 2rem; /* Slightly smaller font for better fit */
-            }
         }
 
         #options-page {
@@ -290,7 +287,7 @@
 
     <!-- Options Page -->
     <div id="options-page" class="hidden">
-        <button id="options-back-top">Back</button> <!-- Added top-right back button -->
+        <button id="options-back-top">Back</button>
         <h2>Welcome to My Self</h2>
         <input type="text" id="name-input" placeholder="What’s your name?">
         <input type="text" id="intro-input" placeholder="Tell me about yourself">
@@ -334,7 +331,7 @@
         const optionsPage = document.getElementById('options-page');
         const tapToBegin = document.getElementById('tap-to-begin');
         const sidebar = document.getElementById('sidebar');
-        const chatContainer = document.getElementById('chat-container'); // Added
+        const chatContainer = document.getElementById('chat-container');
         const chatDisplay = document.getElementById('chat-display');
         const inputField = document.getElementById('input-field');
         const sendBtn = document.getElementById('send-btn');
@@ -346,7 +343,7 @@
         const passcodeInput = document.getElementById('passcode-input');
         const optionsSubmit = document.getElementById('options-submit');
         const optionsBack = document.getElementById('options-back');
-        const optionsBackTop = document.getElementById('options-back-top'); // Added
+        const optionsBackTop = document.getElementById('options-back-top');
         const backBtn = document.getElementById('back-btn');
         const mapTab = document.getElementById('maps-tab');
         const mapPlaceholder = document.getElementById('map-placeholder');
@@ -371,7 +368,7 @@
             })
             .catch(() => userIP = '192.168.1.100'); // Fallback
 
-        // Intro to Options
+        // Intro to Options (Fixed tap functionality)
         tapToBegin.addEventListener('click', () => {
             introScreen.classList.add('hidden');
             optionsPage.classList.remove('hidden');
@@ -380,6 +377,9 @@
                 introInput.value = userIntro;
                 pinInput.value = userPin;
                 passcodeInput.placeholder = 'Enter your passcode';
+                passcodeInput.focus(); // Auto-focus on passcode for returning users
+            } else {
+                nameInput.focus(); // Auto-focus on name for new users
             }
         });
 
@@ -398,16 +398,21 @@
             if (enteredPasscode === 'guru' || enteredPasscode === 'ancient one') {
                 adminBypass = true;
                 optionsPage.classList.add('hidden');
-                chatContainer.classList.remove('hidden'); // Ensure chat is visible
+                chatContainer.classList.remove('hidden');
                 addMessage("Admin access granted, Kofi Fosu. How can I assist?");
             } else if (userPasscode && enteredPasscode !== userPasscode) {
                 alert('Incorrect passcode!');
+                return;
             } else {
                 localStorage.setItem('userName', userName);
                 localStorage.setItem('userIntro', userIntro);
                 localStorage.setItem('userPin', userPin);
+                if (!userPasscode && isSubscribed) {
+                    userPasscode = `X${Math.random().toString(36).slice(2, 5).toUpperCase()}-${Math.random().toString(36).slice(2, 5).toUpperCase()}-${Math.random().toString(36).slice(2, 5).toUpperCase()}`;
+                    localStorage.setItem('userPasscode', userPasscode);
+                }
                 optionsPage.classList.add('hidden');
-                chatContainer.classList.remove('hidden'); // Ensure chat is visible
+                chatContainer.classList.remove('hidden');
                 addMessage(`Hey ${userName}! I’m My Self, your diary. What’s up?`);
             }
         });
@@ -416,17 +421,25 @@
         optionsBack.addEventListener('click', () => {
             optionsPage.classList.add('hidden');
             introScreen.classList.remove('hidden');
+            nameInput.value = '';
+            introInput.value = '';
+            pinInput.value = '';
+            passcodeInput.value = '';
         });
 
-        // New top-right back button on options page
         optionsBackTop.addEventListener('click', () => {
             optionsPage.classList.add('hidden');
             introScreen.classList.remove('hidden');
+            nameInput.value = '';
+            introInput.value = '';
+            pinInput.value = '';
+            passcodeInput.value = '';
         });
 
         backBtn.addEventListener('click', () => {
             chatContainer.classList.add('hidden');
             optionsPage.classList.remove('hidden');
+            inputField.value = ''; // Clear input field when going back
         });
 
         // Swipe Gestures (Mobile Only)
@@ -507,11 +520,6 @@
                 } else {
                     const aiResponse = await getOpenAIResponse(userText);
                     addMessage(aiResponse);
-                    if (!userPasscode && isSubscribed) {
-                        userPasscode = `X${Math.random().toString(36).slice(2, 5).toUpperCase()}-${Math.random().toString(36).slice(2, 5).toUpperCase()}-${Math.random().toString(36).slice(2, 5).toUpperCase()}`;
-                        localStorage.setItem('userPasscode', userPasscode);
-                        addMessage(`Your passcode for multi-device access: ${userPasscode}. Save it!`);
-                    }
                 }
                 inputField.value = '';
             }
@@ -584,7 +592,7 @@
         } else {
             introScreen.classList.add('hidden');
             optionsPage.classList.add('hidden');
-            chatContainer.classList.remove('hidden'); // Ensure chat is visible
+            chatContainer.classList.remove('hidden');
             addMessage(`Welcome back, ${userName}! What’s on your mind?`);
             chatHistory[currentTab]?.forEach(msg => addMessage(msg.text, msg.isUser));
         }
