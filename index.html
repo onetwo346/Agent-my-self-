@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Self - The Digital Diary</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: #1a1a1a; /* Dark mode */
+            color: #e0e0e0;
+            overflow-x: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Intro Screen */
+        #intro-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #1a1a1a;
+            z-index: 10;
+            transition: opacity 0.5s ease;
+        }
+
+        #intro-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #intro-text {
+            font-family: 'Dancing Script', cursive; /* Handwritten vibe for "My Self" */
+            font-size: 2.5rem;
+            color: #e0e0e0;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        #tap-to-begin {
+            margin-top: 20px;
+            padding: 10px 25px;
+            font-size: 1.1rem;
+            background: #333;
+            color: #e0e0e0;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        #tap-to-begin:hover {
+            background: #555;
+        }
+
+        /* Main Container */
+        #main-container {
+            width: 100%;
+            max-width: 600px;
+            height: 100vh;
+            position: relative;
+            background: #1a1a1a;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        #sidebar {
+            position: absolute;
+            width: 250px;
+            height: 100%;
+            background: #2a2a2a;
+            left: -250px;
+            top: 0;
+            transition: left 0.3s ease;
+            z-index: 5;
+            padding: 20px;
+        }
+
+        #sidebar.open {
+            left: 0;
+        }
+
+        #sidebar ul {
+            list-style: none;
+        }
+
+        #sidebar li {
+            margin: 15px 0;
+            padding: 10px;
+            background: #333;
+            border-radius: 5px;
+            cursor: pointer;
+            color: #e0e0e0;
+            transition: background 0.3s ease;
+        }
+
+        #sidebar li:hover {
+            background: #444;
+        }
+
+        /* Chat Interface */
+        #chat-container {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        #chat-display {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 15px;
+            background: #d3d3d3; /* Light gray chat background */
+            border-radius: 10px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .message {
+            margin: 10px 0;
+            padding: 10px 15px;
+            border-radius: 15px;
+            max-width: 80%;
+        }
+
+        .user-message {
+            background: #007bff;
+            color: #fff;
+            align-self: flex-end;
+            margin-left: auto;
+        }
+
+        .diary-message {
+            background: #666;
+            color: #e0e0e0;
+            align-self: flex-start;
+            font-style: slight-italic;
+        }
+
+        #chat-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        #input-field {
+            flex-grow: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 20px;
+            background: #333;
+            color: #e0e0e0;
+            outline: none;
+        }
+
+        #send-btn, #mic-btn {
+            padding: 10px 20px;
+            background: #007bff;
+            border: none;
+            border-radius: 20px;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        #send-btn:hover, #mic-btn:hover {
+            background: #0056b3;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        /* Swipe Handling */
+        @media (max-width: 768px) {
+            #sidebar {
+                transition: left 0.3s ease;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Intro Screen -->
+    <div id="intro-screen">
+        <h1 id="intro-text">My Self - The Digital Diary Reflection of Your Self</h1>
+        <button id="tap-to-begin">Tap to Begin</button>
+    </div>
+
+    <!-- Main Container -->
+    <div id="main-container">
+        <!-- Sidebar -->
+        <div id="sidebar">
+            <ul>
+                <li id="new-tap">New Tap</li>
+                <li id="old-taps">Old Taps</li>
+                <li id="settings">Settings</li>
+            </ul>
+        </div>
+
+        <!-- Chat Interface -->
+        <div id="chat-container">
+            <div id="chat-display"></div>
+            <div id="chat-input">
+                <input type="text" id="input-field" placeholder="Tell me something...">
+                <button id="send-btn">Send</button>
+                <button id="mic-btn">🎙️</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Core Elements
+        const introScreen = document.getElementById('intro-screen');
+        const tapToBegin = document.getElementById('tap-to-begin');
+        const sidebar = document.getElementById('sidebar');
+        const chatDisplay = document.getElementById('chat-display');
+        const inputField = document.getElementById('input-field');
+        const sendBtn = document.getElementById('send-btn');
+        const micBtn = document.getElementById('mic-btn');
+
+        // Simulated IP (for demo)
+        const userIP = '192.168.1.100'; // Replace with real IP detection later
+        let isSubscribed = false;
+        let userName = '';
+        let adminBypass = false;
+
+        // Intro Screen Logic
+        tapToBegin.addEventListener('click', () => {
+            introScreen.classList.add('hidden');
+            if (!userName) {
+                addMessage("Hey there! What’s your name?");
+            } else {
+                addMessage(`Welcome back, ${userName}! What’s on your mind?`);
+            }
+        });
+
+        // Swipe Gestures for Sidebar (iPhone Optimized)
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeDistance = touchEndX - touchStartX;
+            if (swipeDistance > 50) {
+                sidebar.classList.add('open'); // Swipe right to open
+            } else if (swipeDistance < -50) {
+                sidebar.classList.remove('open'); // Swipe left to close
+            }
+        }
+
+        // Chat Logic
+        function addMessage(text, isUser = false) {
+            const message = document.createElement('div');
+            message.classList.add('message');
+            message.classList.add(isUser ? 'user-message' : 'diary-message');
+            message.textContent = text;
+            chatDisplay.appendChild(message);
+            chatDisplay.scrollTop = chatDisplay.scrollHeight;
+        }
+
+        // OpenAI API Integration (Insert your key here)
+        const OPENAI_API_KEY = 'YOUR_OPENAI_API_KEY'; // Replace with your key
+
+        async function getOpenAIResponse(prompt) {
+            if (!OPENAI_API_KEY || OPENAI_API_KEY === 'YOUR_OPENAI_API_KEY') {
+                return "Hey, I need an OpenAI API key to fully come alive! For now, I’ll just say: I’m here for you.";
+            }
+            try {
+                const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${OPENAI_API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        model: 'gpt-3.5-turbo',
+                        messages: [{ role: 'user', content: prompt }],
+                        max_tokens: 150
+                    })
+                });
+                const data = await response.json();
+                return data.choices[0].message.content;
+            } catch (error) {
+                return "Oops, something went offline. I’ll still listen—tell me more!";
+            }
+        }
+
+        sendBtn.addEventListener('click', async () => {
+            const userText = inputField.value.trim();
+            if (userText) {
+                addMessage(userText, true);
+                if (!userName && !userText.startsWith('guru') && !userText.startsWith('ancient one')) {
+                    userName = userText;
+                    addMessage(`Nice to meet you, ${userName}! Tell me about yourself.`);
+                } else if (userText === 'guru' || userText === 'ancient one') {
+                    adminBypass = true;
+                    addMessage("Admin access granted, Kofi Fosu. How can I assist you?");
+                } else if (!isSubscribed && !adminBypass) {
+                    setTimeout(() => {
+                        addMessage("Loving this? Subscribe for $1/month to keep going!", false);
+                        addMessage("Tap here to pay: [Stripe Link Placeholder]", false);
+                    }, 1000);
+                } else {
+                    const aiResponse = await getOpenAIResponse(userText);
+                    addMessage(aiResponse);
+                }
+                inputField.value = '';
+            }
+        });
+
+        inputField.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendBtn.click();
+        });
+
+        micBtn.addEventListener('click', () => {
+            addMessage("Voice mode on—speak away! (Offline capable in full app)");
+        });
+
+        // Creator Credit
+        document.addEventListener('keydown', (e) => {
+            if (e.key === '?' && e.shiftKey) {
+                addMessage("I’m My Self, crafted by Cosmos Coderr. Reach him at cosmoscoderr@gmail.com.");
+            }
+        });
+
+        // Initial Load
+        setTimeout(() => {
+            addMessage("Hey, I’m My Self—your diary companion. What’s your name?");
+        }, 500);
+    </script>
+</body>
+</html>
