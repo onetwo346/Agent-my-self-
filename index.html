@@ -36,7 +36,7 @@
             background: #1a1a1a;
             z-index: 10;
             transition: opacity 0.5s ease;
-            text-align: center; /* Ensure text is centered */
+            text-align: center;
         }
 
         #intro-screen.hidden, #options-page.hidden, #chat-container.hidden {
@@ -70,12 +70,12 @@
         /* Center intro on iPhones */
         @media (max-width: 768px) {
             #intro-screen {
-                padding: 0 20px; /* Add padding to prevent content from sticking to edges */
+                padding: 0 20px;
             }
         }
 
         #options-page {
-            position: relative; /* For positioning the back button */
+            position: relative;
         }
 
         #options-page input {
@@ -111,7 +111,7 @@
         /* Main Container */
         #main-container {
             width: 100%;
-            max-width: 90vw; /* Increased for larger screens */
+            max-width: 90vw;
             height: 100vh;
             position: relative;
             background: #1a1a1a;
@@ -195,7 +195,7 @@
             border-radius: 10px;
             margin-bottom: 20px;
             color: #333;
-            width: 100%; /* Ensure it takes full width */
+            width: 100%;
         }
 
         /* Responsive chat display for larger screens */
@@ -204,8 +204,8 @@
                 padding: 30px;
             }
             #chat-display {
-                max-width: 100%; /* Allow it to take full width */
-                min-height: 400px; /* Ensure it has enough height */
+                max-width: 100%;
+                min-height: 400px;
             }
             #chat-input {
                 max-width: 100%;
@@ -230,7 +230,7 @@
             background: #666;
             color: #e0e0e0;
             align-self: flex-start;
-            font-style: italic; /* Fixed 'slight-italic' */
+            font-style: italic;
         }
 
         #chat-input {
@@ -313,7 +313,7 @@
         </div>
 
         <!-- Chat Interface -->
-        <div id="chat-container">
+        <div id="chat-container" class="hidden">
             <button id="back-btn">Back</button>
             <div id="chat-display"></div>
             <div id="chat-input">
@@ -366,9 +366,9 @@
                 userIP = data.ip;
                 localStorage.setItem('userIP', userIP);
             })
-            .catch(() => userIP = '192.168.1.100'); // Fallback
+            .catch(() => userIP = '192.168.1.100');
 
-        // Intro to Options (Fixed tap functionality)
+        // Intro to Options
         tapToBegin.addEventListener('click', () => {
             introScreen.classList.add('hidden');
             optionsPage.classList.remove('hidden');
@@ -377,13 +377,13 @@
                 introInput.value = userIntro;
                 pinInput.value = userPin;
                 passcodeInput.placeholder = 'Enter your passcode';
-                passcodeInput.focus(); // Auto-focus on passcode for returning users
+                passcodeInput.focus();
             } else {
-                nameInput.focus(); // Auto-focus on name for new users
+                nameInput.focus();
             }
         });
 
-        // Options Page Logic (Admin Passcode Only Here)
+        // Options Page Logic
         optionsSubmit.addEventListener('click', () => {
             userName = nameInput.value.trim();
             userIntro = introInput.value.trim();
@@ -410,6 +410,7 @@
                 if (!userPasscode && isSubscribed) {
                     userPasscode = `X${Math.random().toString(36).slice(2, 5).toUpperCase()}-${Math.random().toString(36).slice(2, 5).toUpperCase()}-${Math.random().toString(36).slice(2, 5).toUpperCase()}`;
                     localStorage.setItem('userPasscode', userPasscode);
+                    addMessage(`Your passcode for multi-device access: ${userPasscode}. Save it!`);
                 }
                 optionsPage.classList.add('hidden');
                 chatContainer.classList.remove('hidden');
@@ -439,7 +440,11 @@
         backBtn.addEventListener('click', () => {
             chatContainer.classList.add('hidden');
             optionsPage.classList.remove('hidden');
-            inputField.value = ''; // Clear input field when going back
+            inputField.value = '';
+            nameInput.value = userName;
+            introInput.value = userIntro;
+            pinInput.value = userPin;
+            passcodeInput.placeholder = userPasscode ? 'Enter your passcode' : 'Enter passcode (if returning)';
         });
 
         // Swipe Gestures (Mobile Only)
@@ -475,11 +480,11 @@
 
             if (!chatHistory[currentTab]) chatHistory[currentTab] = [];
             chatHistory[currentTab].push({ text, isUser });
-            localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+            localStorage.setItem('chartHistory', JSON.stringify(chatHistory));
         }
 
         // OpenAI API Key
-        const OPENAI_API_KEY = 'YOUR_OPENAI_API_KEY'; // Replace here
+        const OPENAI_API_KEY = 'YOUR_OPENAI_API_KEY';
 
         async function getOpenAIResponse(prompt) {
             if (!navigator.onLine) {
@@ -586,16 +591,10 @@
             }
         }
 
-        // Initial Load
-        if (!userName) {
-            setTimeout(() => addMessage("Hey, I’m My Self—your diary. Tap above to start!"), 500);
-        } else {
-            introScreen.classList.add('hidden');
-            optionsPage.classList.add('hidden');
-            chatContainer.classList.remove('hidden');
-            addMessage(`Welcome back, ${userName}! What’s on your mind?`);
-            chatHistory[currentTab]?.forEach(msg => addMessage(msg.text, msg.isUser));
-        }
+        // Initial Load: Always start at intro screen
+        introScreen.classList.remove('hidden');
+        optionsPage.classList.add('hidden');
+        chatContainer.classList.add('hidden');
     </script>
 </body>
 </html>
