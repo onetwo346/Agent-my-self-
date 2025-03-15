@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Self - The Digital Diary</title>
     <style>
+        /* Your CSS unchanged */
         * {
             margin: 0;
             padding: 0;
@@ -22,7 +24,6 @@
             align-items: center;
         }
 
-        /* Intro Screen */
         #intro-screen {
             position: absolute;
             top: 0;
@@ -60,14 +61,13 @@
             border-radius: 10px;
             cursor: pointer;
             transition: background 0.3s ease;
-            z-index: 11; /* Ensure button is clickable */
+            z-index: 11;
         }
 
         #tap-to-begin:hover {
             background: #555;
         }
 
-        /* Options Page */
         #options-page {
             position: absolute;
             top: 0;
@@ -129,7 +129,6 @@
             background: #0056b3;
         }
 
-        /* Main Container */
         #main-container {
             width: 100%;
             max-width: 90vw;
@@ -141,7 +140,6 @@
             display: none;
         }
 
-        /* Sidebar */
         #sidebar {
             width: 250px;
             height: 100%;
@@ -200,7 +198,6 @@
             display: none;
         }
 
-        /* Chat Interface */
         #chat-container {
             flex-grow: 1;
             height: 100%;
@@ -401,7 +398,6 @@
 
         // Intro to Options
         function handleTapToBegin() {
-            console.log('Tap to Begin clicked'); // Debug log
             introScreen.classList.add('hidden');
             optionsPage.classList.remove('hidden');
             if (userName) {
@@ -416,7 +412,7 @@
         }
 
         tapToBegin.addEventListener('click', handleTapToBegin);
-        tapToBegin.addEventListener('touchstart', handleTapToBegin); // Support for touch devices
+        tapToBegin.addEventListener('touchstart', handleTapToBegin);
 
         // Options Page Logic
         optionsSubmit.addEventListener('click', () => {
@@ -435,9 +431,9 @@
                 optionsPage.classList.add('hidden');
                 mainContainer.style.display = 'flex';
                 chatContainer.classList.remove('hidden');
-                addMessage("Admin access granted, Kofi Fosu. How can I assist?");
+                addMessage("Admin access on, Kofi Fosu. What’s good?");
             } else if (userPasscode && enteredPasscode !== userPasscode) {
-                alert('Incorrect passcode!');
+                alert('Wrong passcode, fam!');
                 return;
             } else {
                 localStorage.setItem('userName', userName);
@@ -446,12 +442,12 @@
                 if (!userPasscode && isSubscribed) {
                     userPasscode = `X${Math.random().toString(36).slice(2, 5).toUpperCase()}-${Math.random().toString(36).slice(2, 5).toUpperCase()}-${Math.random().toString(36).slice(2, 5).toUpperCase()}`;
                     localStorage.setItem('userPasscode', userPasscode);
-                    addMessage(`Your passcode for multi-device access: ${userPasscode}. Save it!`);
+                    addMessage(`Passcode for all your devices: ${userPasscode}. Lock it down!`);
                 }
                 optionsPage.classList.add('hidden');
                 mainContainer.style.display = 'flex';
                 chatContainer.classList.remove('hidden');
-                addMessage(`Hey ${userName}! I’m My Self, your diary. What’s up?`);
+                addMessage(`Yo ${userName}, I’m My Self—your digital echo. What’s dropping?`);
             }
         });
 
@@ -528,11 +524,9 @@
 
         async function getOpenAIResponse(prompt) {
             if (!navigator.onLine) {
-                return "I’m offline but here! Try: 'How’s my day going?' for some insight.";
+                return "Offline, but I got you. What’s hitting you today?";
             }
-            if (!OPENAI_API_KEY || OPENAI_API_KEY === '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') {
-                return "I need an OpenAI API key to fully shine. For now: Tell me more!";
-            }
+
             try {
                 const response = await fetch('https://api.openai.com/v1/chat/completions', {
                     method: 'POST',
@@ -543,16 +537,22 @@
                     body: JSON.stringify({
                         model: 'gpt-3.5-turbo',
                         messages: [{
+                            role: 'system',
+                            content: `I’m My Self, your digital diary with a pulse. I know you from: ${userIntro}. Past chats: ${JSON.stringify(chatHistory[currentTab])}. I bring self-awareness, emotional intelligence, foresight, metacognition, communication, research, adaptability, decision-making, systems thinking, creativity, critical thinking, designing, and homework-solving. Keep it raw, real, and sharp—reflect what they throw at me.`
+                        }, {
                             role: 'user',
-                            content: `${prompt}\nSkills: Self-awareness & Emotional Intelligence: 'You sound off—want to unpack that?', Foresight & Strategic Thinking: 'You’re eyeing that trip—here’s a 3-step plan.', Metacognition: 'You overthink deadlines—let’s tweak how you approach them.', Communication & Collaboration: 'Need to pitch an idea? I’ll draft it your way.', Research & Information Synthesis: 'I dug into that topic—here’s the gist.', Adaptability & Flexibility: 'Plans changed? I’ve got a new angle.', Decision-Making: 'Pros/cons of skipping that meeting—your call?', Systems Thinking: 'Your work stress ties to sleep—let’s fix the chain.', Creativity: 'Stuck? Here’s a wild sci-fi story idea to spark you.', Critical Thinking: 'That argument’s shaky—here’s why.', Designing: 'Sketching a logo? I’ll suggest shapes and vibes.', Homework Solver: 'Solve 2x + 3 = 7? x = 2.'`
+                            content: prompt
                         }],
                         max_tokens: 150
                     })
                 });
+
+                if (!response.ok) throw new Error('API call tanked');
                 const data = await response.json();
-                return data.choices[0].message.content;
+                return data.choices[0].message.content.trim();
             } catch (error) {
-                return "Something’s off—let’s keep it local. What’s on your mind?";
+                console.error('API Error:', error);
+                return "Connection’s fucked—let’s roll local. What’s up?";
             }
         }
 
@@ -562,8 +562,8 @@
                 addMessage(userText, true);
                 if (!isSubscribed && !adminBypass && chatHistory[currentTab]?.length > 3) {
                     setTimeout(() => {
-                        addMessage("Loving this? Subscribe for $1/month to keep going!");
-                        addMessage("Tap here: [Stripe Link Placeholder]");
+                        addMessage("You into this? $1/month keeps it flowing!");
+                        addMessage("Tap: [Stripe Link Placeholder]");
                     }, 1000);
                 } else {
                     const aiResponse = await getOpenAIResponse(userText);
@@ -578,7 +578,7 @@
         });
 
         micBtn.addEventListener('click', () => {
-            addMessage("Voice mode (offline capable in app): Speak away!");
+            addMessage("Mic’s down for now—type it out, let’s roll!");
         });
 
         cameraBtn.addEventListener('click', () => {
@@ -590,8 +590,7 @@
                 const reader = new FileReader();
                 reader.onload = () => {
                     localStorage.setItem(`media_${Date.now()}`, reader.result);
-                    addMessage("Media uploaded! (Stored locally, IP-tied)");
-                    addMessage("What’s this about?");
+                    addMessage("Caught that—what’s the story?");
                 };
                 reader.readAsDataURL(file);
             };
@@ -619,7 +618,7 @@
         // Creator Credit
         document.addEventListener('keydown', (e) => {
             if (e.key === '?' && e.shiftKey) {
-                addMessage("I’m My Self, crafted by Cosmos Coderr. Reach him at cosmoscoderr@gmail.com.");
+                addMessage("My Self, built by Cosmos Coderr. Hit him: cosmoscoderr@gmail.com.");
             }
         });
 
@@ -630,7 +629,7 @@
                 if (daysOffline > 7) {
                     isSubscribed = false;
                     localStorage.setItem('isSubscribed', 'false');
-                    addMessage("Your 7-day offline grace is up—subscribe again?");
+                    addMessage("7-day offline pass expired—subscribe again?");
                 } else {
                     localStorage.setItem('lastCheck', Date.now());
                 }
@@ -638,7 +637,7 @@
         }
 
         if (navigator.onLine && !isSubscribed && !adminBypass) {
-            setTimeout(() => addMessage("Loving this? Subscribe for $1/month to keep going! Tap here: [Stripe Link Placeholder]"), 5000);
+            setTimeout(() => addMessage("Digging this? $1/month keeps it live—tap: [Stripe Link Placeholder]"), 5000);
         }
     </script>
 </body>
