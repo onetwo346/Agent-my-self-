@@ -300,7 +300,7 @@
 <body>
     <!-- Intro Screen -->
     <div id="intro-screen">
-        <h1 id="intro-text">My Self - The Digital Diary Reflection of Your Self</h1>
+        <h1 id="intro-text">My Self - I AM the Digital Diary And a Reflection of Your Self</h1>
         <button id="tap-to-begin">Tap to Begin</button>
     </div>
 
